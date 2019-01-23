@@ -1,0 +1,24 @@
+{
+  "name": "event-booking",
+  "version": "1.0.0",
+  "description": "Event booking app to practice uniting GraphQL, Node.Js, MongoDB, Express and React.js",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon ."
+  },
+  "author": "Erick Rosete Beas",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4",
+    "express-graphql": "^0.7.1",
+    "graphql": "^14.1.1",
+    "jsonwebtoken": "^8.4.0",
+    "mongoose": "^5.4.5"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.9"
+  }
+}

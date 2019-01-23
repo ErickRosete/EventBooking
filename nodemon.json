@@ -1,0 +1,8 @@
+{
+    "env":{
+        "MONGO_USER": "erick-rw",
+        "MONGO_PASSWORD": "ZfC5HpdqkaXfRhGk",
+        "MONGO_DB":"event-booking-dev"
+
+    }
+}
