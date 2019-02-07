@@ -16,6 +16,8 @@ class EventsPage extends Component {
     selectedEvent: null
   };
 
+  isActive = true;
+
   static contextType = AuthContext;
 
   constructor(props) {
@@ -36,6 +38,7 @@ class EventsPage extends Component {
     );
     this.setState({ selectedEvent });
   };
+
   startCreateEventHandler = () => {
     this.setState({
       creating: true
@@ -50,9 +53,52 @@ class EventsPage extends Component {
   };
 
   bookEventHandler = () => {
-    this.setState({
-      selectedEvent: null
-    });
+    if (!this.context.token) {
+      this.setState({
+        selectedEvent: null
+      });
+      return;
+    }
+    // console.log(this.state.selectedEvent._id);
+    const requestBody = {
+      query: `
+        mutation {
+          bookEvent(eventId: "${this.state.selectedEvent._id}") {
+            _id
+            createdAt
+            updatedAt
+          }
+        }
+      `
+    };
+
+    const token = this.context.token;
+    fetch("http://localhost:8000/graphql", {
+      method: "POST",
+      body: JSON.stringify(requestBody),
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token
+      }
+    })
+      .then(res => {
+        if (res.status !== 200 && res.status !== 201) {
+          throw new Error("Failed!");
+        }
+        return res.json();
+      })
+      .then(resData => {
+        console.log(resData.data);
+        this.setState({
+          selectedEvent: null
+        });
+      })
+      .catch(err => {
+        console.log(err);
+        this.setState({
+          selectedEvent: null
+        });
+      });
   };
 
   modalConfirmHandler = () => {
@@ -149,12 +195,20 @@ class EventsPage extends Component {
       })
       .then(resData => {
         const events = resData.data.events;
-        this.setState({ events, isLoading: false });
+        if (this.isActive) {
+          this.setState({ events, isLoading: false });
+        }
       })
       .catch(err => {
         console.log(err);
-        this.setState({ isLoading: false });
+        if (this.isActive) {
+          this.setState({ isLoading: false });
+        }
       });
+  }
+
+  componentWillUnmount() {
+    this.isActive = false;
   }
 
   render() {
@@ -198,7 +252,7 @@ class EventsPage extends Component {
             title={this.state.selectedEvent.title}
             onCancel={this.modalCancelHandler}
             onConfirm={this.bookEventHandler}
-            confirmText="Book Event"
+            confirmText={this.context.token ? "Book Event" : "Confirm"}
             canCancel
             canConfirm
           >
@@ -218,6 +272,7 @@ class EventsPage extends Component {
             </button>
           </div>
         )}
+
         {this.state.isLoading ? (
           <Spinner />
         ) : (
